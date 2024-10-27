@@ -31,8 +31,8 @@ public class AzureBlobStorage implements BlobStorage{
 			return error(BAD_REQUEST);
 
         var pathData = path.split("/");
-        var userId = pathData[0];
-        var blobId = pathData[1];
+        var userId = pathData[pathData.length - 2];
+        var blobId = pathData[pathData.length - 1];
 
         try {
             BlobContainerClient containerClient = new BlobContainerClientBuilder()
@@ -74,8 +74,8 @@ public class AzureBlobStorage implements BlobStorage{
         if(pathData.length == 1)
             return deleteAllBlobs(path);
         
-        var userId = pathData[0];
-        var blobId = pathData[1];
+        var userId = pathData[pathData.length - 2];
+        var blobId = pathData[pathData.length - 1];
 
         try {
             BlobContainerClient containerClient = new BlobContainerClientBuilder()
@@ -115,8 +115,8 @@ public class AzureBlobStorage implements BlobStorage{
 			return error(BAD_REQUEST);
         
         var pathData = path.split("/");
-        var userId = pathData[0];
-        var blobId = pathData[1];
+        var userId = pathData[pathData.length - 2];
+        var blobId = pathData[pathData.length - 1];
 
         try {
             BlobContainerClient containerClient = new BlobContainerClientBuilder()
@@ -149,8 +149,8 @@ public class AzureBlobStorage implements BlobStorage{
 			return error(BAD_REQUEST);
         
         var pathData = path.split("/");
-        var userId = pathData[0];
-        var blobId = pathData[1];
+        var userId = pathData[pathData.length - 2];
+        var blobId = pathData[pathData.length - 1];
 
         try {
             BlobContainerClient containerClient = new BlobContainerClientBuilder()
