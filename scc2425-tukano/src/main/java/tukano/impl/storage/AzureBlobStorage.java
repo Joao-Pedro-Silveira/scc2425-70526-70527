@@ -168,13 +168,11 @@ public class AzureBlobStorage implements BlobStorage{
                 return error(NOT_FOUND);
             }
 
-            try (var outputStream = new ByteArrayOutputStream()){
-                blob.downloadStream(outputStream);
-                sink.accept(outputStream.toByteArray());
-                return ok();
-            } catch (Exception e) {
-                return error(INTERNAL_ERROR);
-            }
+            var outputStream = new ByteArrayOutputStream();
+            blob.downloadStream(outputStream);
+            sink.accept(outputStream.toByteArray());
+            return ok();
+
 
         } catch (Exception e) {
             return error(INTERNAL_ERROR);
