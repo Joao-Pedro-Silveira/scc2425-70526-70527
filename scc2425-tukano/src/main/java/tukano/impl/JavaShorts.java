@@ -14,21 +14,28 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.checkerframework.checker.units.qual.C;
+import org.glassfish.hk2.utilities.cache.Cache;
+
 import tukano.api.Blobs;
 import tukano.api.Result;
 import tukano.api.Short;
 import tukano.api.Shorts;
 import tukano.api.User;
+import tukano.impl.cache.CacheForCosmos;
 import tukano.impl.data.Following;
 import tukano.impl.data.Likes;
 import tukano.impl.rest.TukanoRestServer;
 import utils.DB;
+import utils.CosmosDB;
 
 public class JavaShorts implements Shorts {
 
 	private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 	
 	private static Shorts instance;
+
+	private boolean nosql;
 	
 	synchronized public static Shorts getInstance() {
 		if( instance == null )
@@ -36,7 +43,9 @@ public class JavaShorts implements Shorts {
 		return instance;
 	}
 	
-	private JavaShorts() {}
+	private JavaShorts() {
+		nosql = true;
+	}
 	
 	
 	@Override
@@ -49,7 +58,14 @@ public class JavaShorts implements Shorts {
 			var blobUrl = format("%s/%s/%s", TukanoRestServer.serverURI, Blobs.NAME, shortId); 
 			var shrt = new Short(shortId, userId, blobUrl);
 
-			return errorOrValue(DB.insertOne(shrt), s -> s.copyWithLikes_And_Token(0));
+			if (nosql) {
+				var result = errorOrValue(CosmosDB.insertOne(shortId, shrt), s -> s.copyWithLikes_And_Token(0));
+				if (result.isOK())
+					CacheForCosmos.insertOne(shortId, result.value());
+				return result;
+			} else {
+				return errorOrValue(DB.insertOne(shrt), s -> s.copyWithLikes_And_Token(0));
+			}
 		});
 	}
 
@@ -63,7 +79,21 @@ public class JavaShorts implements Shorts {
 		//var query = format("SELECT count(*) FROM Likes l WHERE l.shortId = '%s'", shortId); // doesn't work for NoSQL
 		var query = format("SELECT count(l.shortId) FROM Likes l WHERE l.shortId = '%s'", shortId);
 		var likes = DB.sql(query, Long.class);
-		return errorOrValue( getOne(shortId, Short.class), shrt -> shrt.copyWithLikes_And_Token( likes.get(0)));
+		if (nosql) {
+			var result = CacheForCosmos.getOne(shortId, Short.class);
+			if (result.isOK())
+				return result;
+			else {
+				result = errorOrValue(CosmosDB.getOne(shortId, Short.class), shrt -> shrt.copyWithLikes_And_Token(likes.get(0)));
+				if (result.isOK()) {
+					CacheForCosmos.insertOne(shortId, result.value());
+				}
+				return result;
+			}
+		} else {
+			return errorOrValue( getOne(shortId, Short.class), shrt -> shrt.copyWithLikes_And_Token( likes.get(0)));
+		}
+			
 	}
 
 	

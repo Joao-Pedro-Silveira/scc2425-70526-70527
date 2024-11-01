@@ -24,25 +24,21 @@ public class AzureBlobStorage implements BlobStorage{
 	// Get connection string in the storage access keys page
 	String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=scc70527;AccountKey=Ed/1bDx5OuAwXN/XgvR9wrAH4IpIF9pAxZt0XQqLUOgPKsjcBezUJBdVIypAupi7e6PvGXqhPok4+ASteXd1/g==;EndpointSuffix=core.windows.net";
 
+    private static final String BLOBS_CONTAINER_NAME = "shorts";
+
     @Override
     public Result<Void> write(String path, byte[] bytes) {
         //if (path == null || !path.contains("/")) //might be needed
         if (path == null)
 			return error(BAD_REQUEST);
 
-        var pathData = path.split("/");
-        var userId = pathData[pathData.length - 2];
-        var blobId = pathData[pathData.length - 1];
-
         try {
             BlobContainerClient containerClient = new BlobContainerClientBuilder()
                 .connectionString(storageConnectionString)
-                .containerName(userId)
+                .containerName(BLOBS_CONTAINER_NAME)
                 .buildClient();
 
-            containerClient.createIfNotExists();
-
-            var blob = containerClient.getBlobClient(blobId);
+            var blob = containerClient.getBlobClient(path);
 
             if(blob.exists()) {
                 var data = blob.downloadContent().toBytes();
@@ -68,39 +64,16 @@ public class AzureBlobStorage implements BlobStorage{
         //if (path == null || !path.contains("/")) //might be needed
         if (path == null)
 			return error(BAD_REQUEST);
-        
-        var pathData = path.split("/");
-
-        if(pathData.length == 1)
-            return deleteAllBlobs(path);
-        
-        var userId = pathData[pathData.length - 2];
-        var blobId = pathData[pathData.length - 1];
 
         try {
             BlobContainerClient containerClient = new BlobContainerClientBuilder()
                 .connectionString(storageConnectionString)
-                .containerName(userId)
+                .containerName(BLOBS_CONTAINER_NAME)
                 .buildClient();
 
-            var blob = containerClient.getBlobClient(blobId);
+            var blob = containerClient.getBlobClient(path);
 
             blob.delete();
-
-            return ok();
-        } catch (Exception e) {
-            return error(INTERNAL_ERROR);
-        }
-    }
-
-    private Result<Void> deleteAllBlobs(String userId) {
-        try {
-            BlobContainerClient containerClient = new BlobContainerClientBuilder()
-                .connectionString(storageConnectionString)
-                .containerName(userId)
-                .buildClient();
-
-            containerClient.delete();
 
             return ok();
         } catch (Exception e) {
@@ -113,22 +86,18 @@ public class AzureBlobStorage implements BlobStorage{
         //if (path == null || !path.contains("/")) //might be needed
         if (path == null)
 			return error(BAD_REQUEST);
-        
-        var pathData = path.split("/");
-        var userId = pathData[pathData.length - 2];
-        var blobId = pathData[pathData.length - 1];
 
         try {
             BlobContainerClient containerClient = new BlobContainerClientBuilder()
                 .connectionString(storageConnectionString)
-                .containerName(userId)
+                .containerName(BLOBS_CONTAINER_NAME)
                 .buildClient();
 
             if(!containerClient.exists()){
                 return error(NOT_FOUND);
             }
 
-            var blob = containerClient.getBlobClient(blobId);
+            var blob = containerClient.getBlobClient(path);
 
             if(!blob.exists()){
                 return error(NOT_FOUND);
@@ -148,21 +117,17 @@ public class AzureBlobStorage implements BlobStorage{
         if (path == null)
 			return error(BAD_REQUEST);
         
-        var pathData = path.split("/");
-        var userId = pathData[pathData.length - 2];
-        var blobId = pathData[pathData.length - 1];
-
         try {
             BlobContainerClient containerClient = new BlobContainerClientBuilder()
                 .connectionString(storageConnectionString)
-                .containerName(userId)
+                .containerName(BLOBS_CONTAINER_NAME)
                 .buildClient();
 
             if(!containerClient.exists()){
                 return error(NOT_FOUND);
             }
 
-            var blob = containerClient.getBlobClient(blobId);
+            var blob = containerClient.getBlobClient(path);
 
             if(!blob.exists()){
                 return error(NOT_FOUND);
