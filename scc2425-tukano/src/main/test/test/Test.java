@@ -30,7 +30,7 @@ public class Test {
 		
 		Thread.sleep(1000);
 		
-		var serverURI = String.format("http://localhost:%s/rest", TukanoRestServer.PORT);
+		var serverURI = String.format("http://127.0.0.1:%s/rest", TukanoRestServer.PORT);
 		
 		var blobs = new RestBlobsClient(serverURI);
 		var users = new RestUsersClient( serverURI);
@@ -44,7 +44,6 @@ public class Test {
 		 
 		 
 		 show(users.searchUsers(""));
-		
 		
 		Result<tukano.api.Short> s1, s2;
 

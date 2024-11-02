@@ -22,7 +22,7 @@ import com.azure.core.util.BinaryData;
 public class AzureBlobStorage implements BlobStorage{
 
 	// Get connection string in the storage access keys page
-	String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=sto70526northeurope;AccountKey=Wl1uiCXwBXmv0oDDTscdGzbW/YwLsMRVva58ybu+lN43BgMLgkcmNiI22+XqeUouYZYCglXENsvf+ASt7Bd0Kw==;EndpointSuffix=core.windows.net";
+	String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=sto70527northeurope;AccountKey=ZlFY3smcdBLCGOy/c6rOPzgSnV2Rd8OdZepUplF7C2rUHjMCN01lbUy6xB1FyEAPBoq38tmTx25D+AStlXJttg==;EndpointSuffix=core.windows.net";
 
     private static final String BLOBS_CONTAINER_NAME = "shorts";
 
