@@ -3,12 +3,17 @@ package tukano.impl.cache;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class RedisCache {
-	private static final String RedisHostname = System.getenv("REDIS_HOST_NAME");
-	private static final String RedisKey = System.getenv("REDIS_KEY");
-	private static final int REDIS_PORT = Integer.parseInt(System.getenv("REDIS_PORT"));
-	private static final int REDIS_TIMEOUT = Integer.parseInt(System.getenv("REDIS_TIMEOUT"));
-	private static final boolean Redis_USE_TLS = Boolean.parseBoolean(System.getenv("REDIS_USE_TLS"));
+
+	private static Dotenv dotenv = Dotenv.configure().load();
+
+	private static final String RedisHostname = dotenv.get("REDIS_HOST_NAME");
+	private static final String RedisKey = dotenv.get("REDIS_KEY");
+	private static final int REDIS_PORT = Integer.parseInt(dotenv.get("REDIS_PORT"));
+	private static final int REDIS_TIMEOUT = Integer.parseInt(dotenv.get("REDIS_TIMEOUT"));
+	private static final boolean Redis_USE_TLS = Boolean.parseBoolean(dotenv.get("REDIS_USE_TLS"));
 	
 	private static JedisPool instance;
 	

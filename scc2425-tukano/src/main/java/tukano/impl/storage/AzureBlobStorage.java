@@ -19,10 +19,14 @@ import utils.Hash;
 
 import com.azure.core.util.BinaryData;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class AzureBlobStorage implements BlobStorage{
 
+    private static Dotenv dotenv = Dotenv.configure().load();
+
 	// Get connection string in the storage access keys page
-	String storageConnectionString = System.getenv("STORAGE_CONNECTION_STRING");
+	private static String storageConnectionString = dotenv.get("STORAGE_CONNECTION_STRING");
 
     private static final String BLOBS_CONTAINER_NAME = "shorts";
 

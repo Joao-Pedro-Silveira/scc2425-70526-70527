@@ -28,10 +28,15 @@ import tukano.impl.data.FollowingDAO;
 import tukano.impl.data.Likes;
 import tukano.impl.data.LikesDAO;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class CosmosDB_NoSQL {
-    private static final String CONNECTION_URL = System.getenv("CONNECTION_URL");
-	private static final String DB_KEY = System.getenv("DB_KEY");
-	private static final String DB_NAME = System.getenv("DB_NAME");
+
+	private static Dotenv dotenv = Dotenv.configure().load();
+	
+		private static final String CONNECTION_URL = dotenv.get("CONNECTION_URL");
+	private static final String DB_KEY = dotenv.get("DB_KEY");
+	private static final String DB_NAME = dotenv.get("DB_NAME");
 
     private static final String CONTAINER_USER = "users";
     private static final String CONTAINER_SHORT = "shorts";

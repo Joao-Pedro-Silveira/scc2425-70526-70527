@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import tukano.api.Result;
 import tukano.api.User;
 import tukano.api.Users;
@@ -25,7 +26,9 @@ public class JavaUsers implements Users {
 	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
 
 	private static Users instance;
-	private boolean nosql = true;
+
+	private Dotenv dotenv = Dotenv.configure().load();
+	private boolean nosql = Boolean.parseBoolean(dotenv.get("NOSQL"));
 	
 	synchronized public static Users getInstance() {
 		if( instance == null )

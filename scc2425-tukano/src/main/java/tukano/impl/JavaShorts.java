@@ -29,13 +29,17 @@ import tukano.impl.rest.TukanoRestServer;
 import utils.DB;
 import utils.CosmosDB;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class JavaShorts implements Shorts {
 
 	private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 	
 	private static Shorts instance;
 
-	private boolean nosql = Boolean.parseBoolean(System.getenv("NOSQL"));
+	private Dotenv dotenv = Dotenv.configure().load();
+
+	private boolean nosql = Boolean.parseBoolean(dotenv.get("NOSQL"));
 	
 	synchronized public static Shorts getInstance() {
 		if( instance == null )
