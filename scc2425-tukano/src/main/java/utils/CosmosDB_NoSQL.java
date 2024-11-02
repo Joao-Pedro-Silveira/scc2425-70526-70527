@@ -2,6 +2,9 @@ package utils;
 
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
+
+import org.hsqldb.persist.Log;
 
 import com.azure.cosmos.ConsistencyLevel;
 import com.azure.cosmos.CosmosClient;
@@ -21,7 +24,7 @@ import tukano.api.UserDAO;
 
 import tukano.api.Short;
 import tukano.api.ShortDAO;
-
+import tukano.impl.JavaUsers;
 import tukano.impl.data.Following;
 import tukano.impl.data.FollowingDAO;
 
@@ -30,13 +33,15 @@ import tukano.impl.data.LikesDAO;
 
 public class CosmosDB_NoSQL {
     private static final String CONNECTION_URL = "https://cosmos70526.documents.azure.com:443/"; // replace with your own
-	private static final String DB_KEY = "aoTf4OjVGDNRlPnKxkEquK8UqQL0iW7XgbemhH4qCevmR4izmBLUny5xhUV5tEyC3zrMnFMq1LikACDbFtxtZw==";
+	private static final String DB_KEY = "jQ2068Hg2C5QBaBolnkZkrbkxjwX7FhqVcCUlW5qdWmCg51bmJxZ05LUCfvu234fM3tYTjnUMa43ACDbnQ5YMA==";
 	private static final String DB_NAME = "cosmosdb70526";
 
     private static final String CONTAINER_USER = "users";
     private static final String CONTAINER_SHORT = "shorts";
     private static final String CONTAINER_FOLLOW = "follows";
     private static final String CONTAINER_LIKE = "likes";
+
+	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
 	
 	private static CosmosDB_NoSQL instance;
 
@@ -68,10 +73,11 @@ public class CosmosDB_NoSQL {
 	}
 	
 	private synchronized void init(String containerName) {
-		if( db != null)
-			return;
-		db = client.getDatabase(DB_NAME);
+		if (db == null) {
+			db = client.getDatabase(DB_NAME);
+		}
 		container = db.getContainer(containerName);
+		Log.info(()->("Container: " + container.getId()));
 	}
 
 	public void close() {
@@ -95,7 +101,9 @@ public class CosmosDB_NoSQL {
 	
 	public <T> Result<T> insertOne( T obj) {
         String containerName = ChooseContainer(obj.getClass());
-		return tryCatch( () -> container.createItem(obj).getItem(), containerName);
+		var res = tryCatch( () -> container.createItem(obj).getItem(), containerName);
+		Log.info(()->("InsertOne: " + res.error()));
+		return res;
 	}
 	
 	public <T> Result<List<T>> query(Class<T> clazz, String queryStr) {
@@ -125,9 +133,11 @@ public class CosmosDB_NoSQL {
 			init(containerName);
 			return Result.ok(supplierFunc.get());			
 		} catch( CosmosException ce ) {
+			Log.info(()->("CosmosDB_NoSQL:CosmosE " + ce.getStatusCode() + " " + ce.getMessage()));
 			//ce.printStackTrace();
 			return Result.error ( errorCodeFromStatus(ce.getStatusCode() ));		
 		} catch( Exception x ) {
+			Log.info(()->("CosmosDB_NoSQL:Exece " + x.getMessage()));
 			x.printStackTrace();
 			return Result.error( ErrorCode.INTERNAL_ERROR);						
 		}

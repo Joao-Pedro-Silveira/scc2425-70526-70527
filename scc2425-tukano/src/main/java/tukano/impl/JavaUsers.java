@@ -66,13 +66,17 @@ public class JavaUsers implements Users {
 		
 		if(nosql){
 			var res = CacheForCosmos.getOne("users:"+userId, User.class);
-			if(res.isOK()){
+			if(res.value() != null){
+
+				Log.info(() -> "User found in cache ");
 
 				return validatedUserOrError(res, pwd);
 			}
+
 			res = CosmosDB.getOne(userId, User.class);
 
 			if(res.isOK()){
+				Log.info(() -> "User found in cache DB");
 				CacheForCosmos.insertOne(userId, res.value());
 			}
 

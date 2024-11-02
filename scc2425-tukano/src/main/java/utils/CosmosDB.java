@@ -3,7 +3,6 @@ package utils;
 import java.util.List;
 
 import tukano.api.Result;
-import tukano.impl.cache.RedisCache;
 
 public class CosmosDB {
 

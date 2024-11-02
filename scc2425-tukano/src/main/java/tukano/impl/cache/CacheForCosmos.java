@@ -1,10 +1,17 @@
 package tukano.impl.cache;
 
+import java.util.logging.Logger;
+
+import org.hsqldb.persist.Log;
+
 import tukano.api.Result;
+import tukano.impl.JavaUsers;
 import utils.JSON;
 
 public class CacheForCosmos {
 	
+	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
+
 	public static <T> Result<T> getOne(String key, Class<T> clazz) {
 
 		var jedis = RedisCache.getCachePool().getResource();
@@ -12,8 +19,11 @@ public class CacheForCosmos {
 		var value = jedis.get(key);
 
 		if(value != null){
+			Log.info(() -> "Value found in cache");
 			return Result.ok( JSON.decode(value, clazz));
-		} 
+		}
+
+		Log.info(() -> "Value not found in cache");
         return Result.error(Result.ErrorCode.NOT_FOUND);
 	}
 	

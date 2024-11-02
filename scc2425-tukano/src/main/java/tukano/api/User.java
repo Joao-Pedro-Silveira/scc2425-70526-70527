@@ -3,10 +3,13 @@ package tukano.api;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 public class User {
 	
 	@Id
+	@JsonProperty("id")
 	private String userId;
 	private String pwd;
 	private String email;	
@@ -20,7 +23,7 @@ public class User {
 		this.userId = userId;
 		this.displayName = displayName;
 	}
-
+	
 	public String getUserId() {
 		return userId;
 	}
