@@ -35,7 +35,7 @@ public class JavaShorts implements Shorts {
 	
 	private static Shorts instance;
 
-	private boolean nosql;
+	private boolean nosql = Boolean.parseBoolean(System.getenv("NOSQL"));
 	
 	synchronized public static Shorts getInstance() {
 		if( instance == null )
@@ -43,10 +43,7 @@ public class JavaShorts implements Shorts {
 		return instance;
 	}
 	
-	private JavaShorts() {
-		nosql = true;
-	}
-	
+	private JavaShorts() {}
 	
 	@Override
 	public Result<Short> createShort(String userId, String password) {

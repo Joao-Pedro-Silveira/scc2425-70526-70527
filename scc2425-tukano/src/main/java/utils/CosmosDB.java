@@ -3,7 +3,6 @@ package utils;
 import java.util.List;
 
 import tukano.api.Result;
-import tukano.impl.cache.RedisCache;
 
 public class CosmosDB {
 
@@ -29,22 +28,18 @@ public class CosmosDB {
 	}
 	
 	public static <T> Result<T> getOne(String id, Class<T> clazz) {
-
 		return CosmosDB_NoSQL.getInstance().getOne(id, clazz);
 	}
 	
 	public static <T> Result<?> deleteOne(T obj) {
-
 		return CosmosDB_NoSQL.getInstance().deleteOne(obj);
 	}
 	
 	public static <T> Result<T> updateOne(T obj) {
-
 		return CosmosDB_NoSQL.getInstance().updateOne(obj);
 	}
 	
 	public static <T> Result<T> insertOne(T obj) {
-
 		return Result.errorOrValue(CosmosDB_NoSQL.getInstance().insertOne(obj), obj);
 	}
 	
