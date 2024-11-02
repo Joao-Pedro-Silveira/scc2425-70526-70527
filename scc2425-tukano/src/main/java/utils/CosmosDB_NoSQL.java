@@ -29,9 +29,9 @@ import tukano.impl.data.Likes;
 import tukano.impl.data.LikesDAO;
 
 public class CosmosDB_NoSQL {
-    private static final String CONNECTION_URL = "https://scc242570527.documents.azure.com:443/"; // replace with your own
-	private static final String DB_KEY = "ml2YBnQD2EVahXBRPQe7zaME6G5jc8AKGVPlMxypQou2NrnGYuxDXOhdMHrbpODUDm8tRoawlg31ACDbP3rFUw==";
-	private static final String DB_NAME = "scc2425-tukano";
+    private static final String CONNECTION_URL = "https://cosmos70526.documents.azure.com:443/"; // replace with your own
+	private static final String DB_KEY = "aoTf4OjVGDNRlPnKxkEquK8UqQL0iW7XgbemhH4qCevmR4izmBLUny5xhUV5tEyC3zrMnFMq1LikACDbFtxtZw==";
+	private static final String DB_NAME = "cosmosdb70526";
 
     private static final String CONTAINER_USER = "users";
     private static final String CONTAINER_SHORT = "shorts";

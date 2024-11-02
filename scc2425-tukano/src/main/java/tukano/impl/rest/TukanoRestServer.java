@@ -34,6 +34,7 @@ public class TukanoRestServer extends Application {
 	}
 	
 	public TukanoRestServer() {
+		
 		serverURI = String.format(SERVER_BASE_URI, IP.hostname(), PORT);
 		singletons.add(new ResourceConfig());
 		resources.add(RestBlobsResource.class);

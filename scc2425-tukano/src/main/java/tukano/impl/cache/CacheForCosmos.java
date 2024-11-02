@@ -1,16 +1,14 @@
 package tukano.impl.cache;
 
-import java.util.List;
-
 import tukano.api.Result;
 import utils.JSON;
 
 public class CacheForCosmos {
 	
-	public static <T> Result<T> getOne(String id, Class<T> clazz) {
+	public static <T> Result<T> getOne(String key, Class<T> clazz) {
 
 		var jedis = RedisCache.getCachePool().getResource();
-		var key = clazz.getSimpleName() + ":" + id;
+		//var key = clazz.getSimpleName() + ":" + id;
 		var value = jedis.get(key);
 
 		if(value != null){
@@ -19,10 +17,9 @@ public class CacheForCosmos {
         return Result.error(Result.ErrorCode.NOT_FOUND);
 	}
 	
-	public static <T> Result<?> deleteOne(String id, T obj) {
+	public static <T> Result<?> deleteOne(String key) {
 
 		var jedis = RedisCache.getCachePool().getResource();
-		var key = obj.getClass().getSimpleName() + ":" + id;
 		jedis.del(key);
 
 		return Result.ok();
@@ -38,10 +35,10 @@ public class CacheForCosmos {
 		return Result.ok(obj);
 	}
 	
-	public static <T> Result<T> insertOne(String id, T obj) {
+	public static <T> Result<T> insertOne(String key, T obj) {
 
         var jedis = RedisCache.getCachePool().getResource();
-        var key = obj.getClass().getSimpleName() + ":" + id;
+        //var key = obj.getClass().getSimpleName() + ":" + id;
         jedis.set(key, JSON.encode(obj));
 		
 		return Result.ok(obj);

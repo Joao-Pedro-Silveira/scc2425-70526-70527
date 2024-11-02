@@ -1,6 +1,7 @@
 D:\Uni\Git\scc2425-70526-70527\scc2425-tukano\src\main\java\tukano\impl\rest\RestBlobsResource.java
 D:\Uni\Git\scc2425-70526-70527\scc2425-tukano\src\main\java\utils\IO.java
 D:\Uni\Git\scc2425-70526-70527\scc2425-tukano\src\main\java\tukano\api\rest\RestBlobs.java
+D:\Uni\Git\scc2425-70526-70527\scc2425-tukano\src\main\java\tukano\impl\cache\CacheForCosmos.java
 D:\Uni\Git\scc2425-70526-70527\scc2425-tukano\src\main\java\utils\TLS.java
 D:\Uni\Git\scc2425-70526-70527\scc2425-tukano\src\main\java\utils\CosmosDB.java
 D:\Uni\Git\scc2425-70526-70527\scc2425-tukano\src\main\java\tukano\impl\rest\utils\CustomLoggingFilter.java

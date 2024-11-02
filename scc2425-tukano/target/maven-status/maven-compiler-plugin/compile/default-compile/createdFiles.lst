@@ -40,6 +40,7 @@ tukano\api\UserDAO.class
 utils\Queues.class
 tukano\api\rest\RestShorts.class
 tukano\api\Result$ErrorCode.class
+tukano\impl\cache\CacheForCosmos.class
 tukano\clients\rest\RestUsersClient$1.class
 tukano\api\ShortDAO.class
 tukano\impl\data\Likes.class

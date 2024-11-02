@@ -16,12 +16,16 @@ import tukano.api.Result;
 import tukano.api.User;
 import tukano.api.Users;
 import utils.DB;
+import utils.CosmosDB;
+import tukano.impl.cache.CacheForCosmos;
+
 
 public class JavaUsers implements Users {
 	
 	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
 
 	private static Users instance;
+	private boolean nosql = true;
 	
 	synchronized public static Users getInstance() {
 		if( instance == null )
@@ -29,15 +33,27 @@ public class JavaUsers implements Users {
 		return instance;
 	}
 	
-	private JavaUsers() {}
+	private JavaUsers() {
+	}
 	
 	@Override
 	public Result<String> createUser(User user) {
 		Log.info(() -> format("createUser : %s\n", user));
 
 		if( badUserInfo( user ) )
-				return error(BAD_REQUEST);
+			return error(BAD_REQUEST);
 
+		if(nosql){
+			Log.info(() -> "Using CosmosDB");
+			var res = CosmosDB.insertOne(user);
+			if(res.isOK()){
+				Log.info(() -> "Inserting into cache");
+				CacheForCosmos.insertOne("users:"+user.getUserId(), user);
+			}
+			Log.info(() -> "Returning result");
+			return errorOrValue(res, user.getUserId());
+		}
+		
 		return errorOrValue( DB.insertOne( user), user.getUserId() );
 	}
 
@@ -48,7 +64,24 @@ public class JavaUsers implements Users {
 		if (userId == null)
 			return error(BAD_REQUEST);
 		
-		return validatedUserOrError( DB.getOne( userId, User.class), pwd);
+		if(nosql){
+			var res = CacheForCosmos.getOne("users:"+userId, User.class);
+			if(res.isOK()){
+
+				return validatedUserOrError(res, pwd);
+			}
+			res = CosmosDB.getOne(userId, User.class);
+
+			if(res.isOK()){
+				CacheForCosmos.insertOne(userId, res.value());
+			}
+
+			return validatedUserOrError(res, pwd);
+			
+		} else{
+
+			return validatedUserOrError( DB.getOne( userId, User.class), pwd);
+		}
 	}
 
 	@Override
@@ -84,7 +117,7 @@ public class JavaUsers implements Users {
 	public Result<List<User>> searchUsers(String pattern) {
 		Log.info( () -> format("searchUsers : patterns = %s\n", pattern));
 
-		var query = format("SELECT * FROM User u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern.toUpperCase());
+		var query = format("SELECT * FROM User u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern);
 		var hits = DB.sql(query, User.class)
 				.stream()
 				.map(User::copyWithoutPassword)
