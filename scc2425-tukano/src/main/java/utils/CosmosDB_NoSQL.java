@@ -113,6 +113,7 @@ public class CosmosDB_NoSQL {
         String containerName = ChooseContainer(queryStr);
 		return tryCatch(() -> {
 			var res = container.queryItems(queryStr, new CosmosQueryRequestOptions(), clazz);
+			Log.info(()->("Query: " + res.stream()));
 			return res.stream().toList();
 		}, containerName);
 	}
