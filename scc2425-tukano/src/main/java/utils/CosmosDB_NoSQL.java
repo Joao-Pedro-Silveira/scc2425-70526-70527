@@ -107,11 +107,25 @@ public class CosmosDB_NoSQL {
 	}
 	
 	public <T> Result<List<T>> query(Class<T> clazz, String queryStr) {
-        String containerName = ChooseContainer(clazz);
+        String containerName = ChooseContainer(queryStr);
 		return tryCatch(() -> {
 			var res = container.queryItems(queryStr, new CosmosQueryRequestOptions(), clazz);
 			return res.stream().toList();
 		}, containerName);
+	}
+
+	private String ChooseContainer(String queryStr) {
+		if (queryStr.contains("User")) {
+			return CONTAINER_USER;
+		} else if (queryStr.contains("Short")) {
+			return CONTAINER_SHORT;
+		} else if (queryStr.contains("Following")) {
+			return CONTAINER_FOLLOW;
+		} else if (queryStr.contains("Likes")) {
+			return CONTAINER_LIKE;
+		} else {
+			return null;
+		}
 	}
 
 	private String ChooseContainer(Class<?> clazz) {

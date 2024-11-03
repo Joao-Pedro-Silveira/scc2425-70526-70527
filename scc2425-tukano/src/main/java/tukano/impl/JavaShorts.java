@@ -80,7 +80,7 @@ public class JavaShorts implements Shorts {
 			
 		//var query = format("SELECT count(*) FROM Likes l WHERE l.shortId = '%s'", shortId); // doesn't work for NoSQL
 		var query = format("SELECT count(l.shortId) FROM Likes l WHERE l.shortId = '%s'", shortId);
-		var likes = DB.sql(query, Long.class);
+		var likes = CosmosDB.sql(query, Long.class);
 
 		if (nosql) {
 
@@ -115,11 +115,12 @@ public class JavaShorts implements Shorts {
 					var query = format("DELETE Likes l WHERE l.shortId = '%s'", shortId);
 
 					CosmosDB.sql(query, Likes.class);
-
+					
 					CacheForCosmos.deleteOne("short:"+shortId);
 					
 					CosmosDB.deleteOne(shrt);
 					
+					//Problem with token
 					return JavaBlobs.getInstance().delete(shrt.getBlobUrl(), Token.get() );
 
 				} else{
