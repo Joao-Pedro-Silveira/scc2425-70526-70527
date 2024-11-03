@@ -11,9 +11,12 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import org.hsqldb.persist.Log;
+
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import tukano.api.Result;
 import utils.Hash;
 
@@ -21,8 +24,10 @@ import com.azure.core.util.BinaryData;
 
 public class AzureBlobStorage implements BlobStorage{
 
+    private static Dotenv dotenv = Dotenv.load();
+
 	// Get connection string in the storage access keys page
-	String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=sto70527northeurope;AccountKey=ZlFY3smcdBLCGOy/c6rOPzgSnV2Rd8OdZepUplF7C2rUHjMCN01lbUy6xB1FyEAPBoq38tmTx25D+AStlXJttg==;EndpointSuffix=core.windows.net";
+	String storageConnectionString = dotenv.get("STORAGE_CONNECTION_STRING");
 
     private static final String BLOBS_CONTAINER_NAME = "shorts";
 
@@ -39,7 +44,7 @@ public class AzureBlobStorage implements BlobStorage{
                 .buildClient();
 
             var blob = containerClient.getBlobClient(path);
-
+            
             if(blob.exists()) {
                 var data = blob.downloadContent().toBytes();
 
@@ -52,7 +57,7 @@ public class AzureBlobStorage implements BlobStorage{
             var data = BinaryData.fromBytes(bytes);
             
             blob.upload(data);
-
+            
             return ok();
         } catch (Exception e) {
             return error(INTERNAL_ERROR);

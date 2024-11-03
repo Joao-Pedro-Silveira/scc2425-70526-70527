@@ -88,7 +88,8 @@ public class Short {
 	}
 	
 	public Short copyWithLikes_And_Token( long totLikes) {
-		var urlWithToken = String.format("%s?token=%s", blobUrl, Token.get(blobUrl));
+		var blobUrlItems = blobUrl.split("/");
+		var urlWithToken = String.format("%s?token=%s", blobUrl, Token.get(blobUrlItems[blobUrlItems.length-1]));
 		return new Short( shortId, ownerId, urlWithToken, timestamp, (int)totLikes);
 	}	
 }
