@@ -70,6 +70,8 @@ public class AzureBlobStorage implements BlobStorage{
         if (path == null)
 			return error(BAD_REQUEST);
 
+        System.out.println("Deleting blob: " + path);
+
         try {
             BlobContainerClient containerClient = new BlobContainerClientBuilder()
                 .connectionString(storageConnectionString)
@@ -82,6 +84,7 @@ public class AzureBlobStorage implements BlobStorage{
 
             return ok();
         } catch (Exception e) {
+            e.printStackTrace();
             return error(INTERNAL_ERROR);
         }
     }

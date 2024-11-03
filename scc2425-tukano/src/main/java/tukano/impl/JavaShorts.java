@@ -148,7 +148,7 @@ public class JavaShorts implements Shorts {
 					// CosmosDB.deleteOne(shrt);
 					
 					//Problem with token
-					return JavaBlobs.getInstance().delete(shrt.getBlobUrl(), Token.get(shrt.getBlobUrl()) );
+					return JavaBlobs.getInstance().delete(shortId, Token.get(shortId) );
 
 				} else{
 
