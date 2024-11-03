@@ -77,7 +77,7 @@ public class JavaUsers implements Users {
 			var ras = CosmosDB.getOne(userId, User.class);
 
 			if(ras.isOK()){
-				Log.info(() -> "User found in cache DB");
+				Log.info(() -> "User found in DB");
 				CacheForCosmos.insertOne(userId, ras.value());
 			}
 

@@ -1,17 +1,18 @@
 package tukano.impl.data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 @Entity
 public class Likes {
-	
-	@Id 
-	String userId;
-	
-	@Id 
+		
+	@JsonProperty("id")
 	String shortId;
 	
 	public String getOwnerId() {
@@ -23,21 +24,24 @@ public class Likes {
 	}
 
 	String ownerId;
+
+	List<String> userIds;
 	
 	public Likes() {}
 
-	public Likes(String userId, String shortId, String ownerId) {
-		this.userId = userId;
+	public Likes(String shortId, String ownerId) {
 		this.shortId = shortId;
 		this.ownerId = ownerId;
+		this.userIds = new ArrayList<>();
 	}
 
-	public String getUserId() {
-		return userId;
+
+	public List<String> getUserIds() {
+		return userIds;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUserIds(List<String> userIds) {
+		this.userIds = userIds;
 	}
 
 	public String getShortId() {
@@ -50,12 +54,12 @@ public class Likes {
 
 	@Override
 	public String toString() {
-		return "Likes [userId=" + userId + ", shortId=" + shortId + ", ownerId=" + ownerId + "]";
+		return "Likes [shortId=" + shortId + ", ownerId=" + ownerId + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(ownerId, shortId, userId);
+		return Objects.hash(ownerId, shortId);
 	}
 
 	@Override
@@ -67,8 +71,7 @@ public class Likes {
 		if (getClass() != obj.getClass())
 			return false;
 		Likes other = (Likes) obj;
-		return Objects.equals(ownerId, other.ownerId) && Objects.equals(shortId, other.shortId)
-				&& Objects.equals(userId, other.userId);
+		return Objects.equals(ownerId, other.ownerId) && Objects.equals(shortId, other.shortId);
 	}
 	
 	
