@@ -19,6 +19,7 @@ import tukano.api.Users;
 import utils.DB;
 import utils.CosmosDB;
 import tukano.impl.cache.CacheForCosmos;
+import tukano.impl.data.Following;
 
 
 public class JavaUsers implements Users {
@@ -52,6 +53,7 @@ public class JavaUsers implements Users {
 			if(res.isOK()){
 				Log.info(() -> "Inserting into cache");
 				CacheForCosmos.insertOne("users:"+user.getUserId(), user);
+				CosmosDB.insertOne(new Following(user.getUserId()));
 			}
 			Log.info(() -> "Returning result");
 			return errorOrValue(res, user.getUserId());
@@ -97,9 +99,19 @@ public class JavaUsers implements Users {
 		Log.info(() -> format("updateUser : userId = %s, pwd = %s, user: %s\n", userId, pwd, other));
 
 		if (badUpdateUserInfo(userId, pwd, other))
-			return error(BAD_REQUEST);
+				return error(BAD_REQUEST);
 
-		return errorOrResult( validatedUserOrError(DB.getOne( userId, User.class), pwd), user -> DB.updateOne( user.updateFrom(other)));
+		if (nosql) {
+			return errorOrResult( validatedUserOrError(CacheForCosmos.getOne("users:"+userId, User.class), pwd), user -> {
+				var res = CosmosDB.updateOne(user.updateFrom(other));
+				if(res.isOK()){
+					CacheForCosmos.updateOne("users:"+userId, res.value());
+				}
+				return res;
+			});
+		} else {
+			return errorOrResult( validatedUserOrError(DB.getOne( userId, User.class), pwd), user -> DB.updateOne( user.updateFrom(other)));
+		}
 	}
 
 	@Override
@@ -125,13 +137,23 @@ public class JavaUsers implements Users {
 	public Result<List<User>> searchUsers(String pattern) {
 		Log.info( () -> format("searchUsers : patterns = %s\n", pattern));
 
-		var query = format("SELECT * FROM User u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern);
-		var hits = DB.sql(query, User.class)
-				.stream()
-				.map(User::copyWithoutPassword)
-				.toList();
+		if(nosql){
+			var query = format("SELECT u.pwd, u.email, u.displayName, u.id FROM User u WHERE UPPER(u.id) LIKE '%%%s%%'", pattern.toUpperCase());
+			var hits = CosmosDB.sql(query, User.class)
+					.stream()
+					.map(User::copyWithoutPassword)
+					.toList();
+			
+			return ok(hits);
+		} else {
+			var query = format("SELECT * FROM User u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern);
+			var hits = DB.sql(query, User.class)
+					.stream()
+					.map(User::copyWithoutPassword)
+					.toList();
 
-		return ok(hits);
+			return ok(hits);
+		}
 	}
 
 	

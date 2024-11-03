@@ -35,10 +35,10 @@ public class CacheForCosmos {
 		return Result.ok();
 	}
 	
-	public static <T> Result<T> updateOne(String id, T obj) {
+	public static <T> Result<T> updateOne(String key, T obj) {
 
 		var jedis = RedisCache.getCachePool().getResource();
-		var key = obj.getClass().getSimpleName() + ":" + id;
+		//var key = obj.getClass().getSimpleName() + ":" + id;
 
 		jedis.set(key, JSON.encode(obj));
 

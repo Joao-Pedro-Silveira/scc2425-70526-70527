@@ -175,27 +175,38 @@ public class JavaShorts implements Shorts {
 	}
 
 	@Override
-	public Result<Void> follow(String userId1, String userId2, boolean isFollowing, String password) {
-		Log.info(() -> format("follow : userId1 = %s, userId2 = %s, isFollowing = %s, pwd = %s\n", userId1, userId2, isFollowing, password));
-	
-		
-		return errorOrResult( okUser(userId1, password), user -> {
-			var f = new Following(userId1, userId2);
-			if(nosql){
-				return errorOrVoid( okUser( userId2), isFollowing ? CosmosDB.insertOne( f ) : CosmosDB.deleteOne( f ));	
-			} else{
-				return errorOrVoid( okUser( userId2), isFollowing ? DB.insertOne( f ) : DB.deleteOne( f ));	
-			}
-		});			
-	}
+    public Result<Void> follow(String userId1, String userId2, boolean isFollowing, String password) {
+        Log.info(() -> format("follow : userId1 = %s, userId2 = %s, isFollowing = %s, pwd = %s\n", userId1, userId2, isFollowing, password));
 
-	@Override
-	public Result<List<String>> followers(String userId, String password) {
-		Log.info(() -> format("followers : userId = %s, pwd = %s\n", userId, password));
 
-		var query = format("SELECT VALUE f.follower FROM Following f WHERE f.followee = '%s'", userId);		
-		return errorOrValue( okUser(userId, password), nosql ? CosmosDB.sql(query, String.class) : DB.sql(query, String.class));
-	}
+        return errorOrResult( okUser(userId1, password), user -> {
+            var follow = CosmosDB.getOne(userId2, Following.class).value();
+            if(nosql){
+                List<String> followers = follow.getFollowers();
+                if(isFollowing){
+                    if(!followers.contains(userId1)){
+                        followers.add(userId1);
+                    }
+                } else{
+                    if(followers.contains(userId1)){
+                        followers.remove(userId1);
+                    } 
+                }
+                follow.setFollowers(followers);
+                return errorOrVoid( okUser( userId2), CosmosDB.updateOne( follow ));
+            } else{
+                return errorOrVoid( okUser( userId2), isFollowing ? DB.insertOne( follow ) : DB.deleteOne( follow ));
+            }
+        });
+    }
+
+    @Override
+    public Result<List<String>> followers(String userId, String password) {
+        Log.info(() -> format("followers : userId = %s, pwd = %s\n", userId, password));
+
+        var query = format("SELECT VALUE f.follower FROM Following f WHERE f.followee = '%s'", userId);
+        return errorOrValue( okUser(userId, password), nosql ? CosmosDB.getOne(userId, Following.class).value().getFollowers() : DB.sql(query, String.class));
+    }
 
 	@Override
 	public Result<Void> like(String shortId, String userId, boolean isLiked, String password) {

@@ -41,7 +41,7 @@ public class CosmosDB_NoSQL {
 
     private static final String CONTAINER_USER = "users";
     private static final String CONTAINER_SHORT = "shorts";
-    private static final String CONTAINER_FOLLOW = "follows";
+    private static final String CONTAINER_FOLLOW = "following";
     private static final String CONTAINER_LIKE = "likes";
 
 	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
