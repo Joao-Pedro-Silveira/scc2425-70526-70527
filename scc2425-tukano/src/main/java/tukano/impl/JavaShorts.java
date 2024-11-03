@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import org.checkerframework.checker.units.qual.C;
 import org.glassfish.hk2.utilities.cache.Cache;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import tukano.api.Blobs;
 import tukano.api.Result;
 import tukano.api.Short;
@@ -37,7 +38,9 @@ public class JavaShorts implements Shorts {
 	
 	private static Shorts instance;
 
-	private boolean nosql;
+	private static Dotenv dotenv = Dotenv.load();
+
+	private boolean nosql = Boolean.parseBoolean(dotenv.get("NOSQL"));
 	
 	synchronized public static Shorts getInstance() {
 		if( instance == null )
@@ -45,9 +48,7 @@ public class JavaShorts implements Shorts {
 		return instance;
 	}
 	
-	private JavaShorts() {
-		nosql = true;
-	}
+	private JavaShorts() {}
 	
 	
 	@Override
@@ -147,7 +148,7 @@ public class JavaShorts implements Shorts {
 					// CosmosDB.deleteOne(shrt);
 					
 					//Problem with token
-					return JavaBlobs.getInstance().delete(shrt.getBlobUrl(), Token.get() );
+					return JavaBlobs.getInstance().delete(shrt.getBlobUrl(), Token.get(shrt.getBlobUrl()) );
 
 				} else{
 

@@ -35,7 +35,7 @@ public class TukanoRestServer extends Application {
 	
 	public TukanoRestServer() {
 		Token.setSecret( Args.valueOf("-secret", "bonk"));
-		serverURI = String.format(SERVER_BASE_URI, IP.hostname(), PORT);
+		serverURI = "http://127.0.0.1:8080/tukano/rest";//String.format(SERVER_BASE_URI, IP.hostname(), PORT);
 		singletons.add(new ResourceConfig());
 		resources.add(RestBlobsResource.class);
 		resources.add(RestUsersResource.class);

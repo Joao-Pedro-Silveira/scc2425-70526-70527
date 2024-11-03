@@ -1,14 +1,18 @@
 package tukano.impl.cache;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 public class RedisCache {
-	private static final String RedisHostname = "redis70526northeurope.redis.cache.windows.net";
-	private static final String RedisKey = "korgJO46KBHas4l4p5av961sewAxN3pFVAzCaIPAhK4=";
+
+	private static Dotenv dotenv = Dotenv.load();
+	
+	private static final String RedisHostname = dotenv.get("REDIS_HOST_NAME");
+	private static final String RedisKey = dotenv.get("REDIS_KEY");
 	private static final int REDIS_PORT = 6380;
 	private static final int REDIS_TIMEOUT = 1000;
-	private static final boolean Redis_USE_TLS = true;
+	private static final boolean Redis_USE_TLS = dotenv.get("REDIS_USE_TLS").equals("true");
 	
 	private static JedisPool instance;
 	

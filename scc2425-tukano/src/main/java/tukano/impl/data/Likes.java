@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -24,6 +26,9 @@ public class Likes {
 	}
 
 	String ownerId;
+	
+	@JsonProperty("id")
+	private String id;
 
 	List<String> userIds;
 	
