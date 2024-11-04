@@ -68,8 +68,10 @@ public class AzureBlobStorage implements BlobStorage{
     public Result<Void> delete(String path) {
         //if (path == null || !path.contains("/")) //might be needed
         if (path == null)
-			return error(BAD_REQUEST);
+            return error(BAD_REQUEST);
 
+        if(!path.contains("/"))
+            path = path+"/";
         System.out.println("Deleting blob: " + path);
 
         try {
@@ -78,9 +80,10 @@ public class AzureBlobStorage implements BlobStorage{
                 .containerName(BLOBS_CONTAINER_NAME)
                 .buildClient();
 
-            var blob = containerClient.getBlobClient(path);
-
-            blob.delete();
+            var blob = containerClient.listBlobsByHierarchy(path).iterator();
+            while (blob.hasNext()) {
+                containerClient.getBlobClient(blob.next().getName()).delete();
+            }
 
             return ok();
         } catch (Exception e) {

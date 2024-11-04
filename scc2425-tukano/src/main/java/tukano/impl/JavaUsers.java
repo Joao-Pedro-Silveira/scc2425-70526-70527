@@ -53,7 +53,7 @@ public class JavaUsers implements Users {
 			if(res.isOK()){
 				Log.info(() -> "Inserting into cache");
 				CacheForCosmos.insertOne("users:"+user.getUserId(), user);
-				CosmosDB.insertOne(new Following(user.getUserId()));
+				//CosmosDB.insertOne(new Following(user.getUserId()));
 			}
 			Log.info(() -> "Returning result");
 			return errorOrValue(res, user.getUserId());
@@ -121,16 +121,27 @@ public class JavaUsers implements Users {
 		if (userId == null || pwd == null )
 			return error(BAD_REQUEST);
 
-		return errorOrResult( validatedUserOrError(DB.getOne( userId, User.class), pwd), user -> {
-
-			// Delete user shorts and related info asynchronously in a separate thread
-			Executors.defaultThreadFactory().newThread( () -> {
+		if(nosql){
+			return errorOrResult( validatedUserOrError(CacheForCosmos.getOne("users:"+userId, User.class), pwd), user -> {
 				JavaShorts.getInstance().deleteAllShorts(userId, pwd, Token.get(userId));
 				JavaBlobs.getInstance().deleteAllBlobs(userId, Token.get(userId));
-			}).start();
-			
-			return DB.deleteOne( user);
-		});
+
+				CosmosDB.deleteOne(user);
+				CacheForCosmos.deleteOne("users:"+userId);
+				return ok(user);
+			});
+		} else {
+			return errorOrResult( validatedUserOrError(DB.getOne( userId, User.class), pwd), user -> {
+
+				// Delete user shorts and related info asynchronously in a separate thread
+				Executors.defaultThreadFactory().newThread( () -> {
+					JavaShorts.getInstance().deleteAllShorts(userId, pwd, Token.get(userId));
+					JavaBlobs.getInstance().deleteAllBlobs(userId, Token.get(userId));
+				}).start();
+				
+				return DB.deleteOne( user);
+			});
+		}
 	}
 
 	@Override

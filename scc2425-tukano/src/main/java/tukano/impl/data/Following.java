@@ -1,36 +1,44 @@
 package tukano.impl.data;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
 public class Following{
+
+	@Id 
+	@JsonProperty("follower")
+	String follower;
 	
-	@JsonProperty("id")
+	@Id 
+	@JsonProperty("followee")
 	String followee;
 
-	List<String> followers;
+	@JsonProperty("id")
+	private String id;
 
 	Following() {}
 
-	public Following(String followee) {
-		super();
+	public Following(String follower, String followee) {
+		this.follower = follower;
 		this.followee = followee;
-		followers = new ArrayList<>(); 
+		this.id = makeId(follower, followee);
 	}
 
-
-	public List<String> getFollowers() {
-		return followers;
+	public String makeId(String fol, String fole) {
+		return follower +"_"+ followee;
 	}
 
-	public void setFollowers(List<String> followers) {
-		this.followers = followers;
+	public String getFollower() {
+		return follower;
+	}
+
+	public void setFollower(String follower) {
+		this.follower = follower;
 	}
 
 	public String getFollowee() {
@@ -43,7 +51,7 @@ public class Following{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(followee);
+		return Objects.hash(followee, follower);
 	}
 
 	@Override
@@ -55,12 +63,12 @@ public class Following{
 		if (getClass() != obj.getClass())
 			return false;
 		Following other = (Following) obj;
-		return Objects.equals(followee, other.followee);
+		return Objects.equals(followee, other.followee) && Objects.equals(follower, other.follower);
 	}
 
 	@Override
 	public String toString() {
-		return "Following [followee=" + followee +", followers=" + followers + "]";
+		return "Following [follower=" + follower + ", followee=" + followee + "]";
 	}
 	
 	

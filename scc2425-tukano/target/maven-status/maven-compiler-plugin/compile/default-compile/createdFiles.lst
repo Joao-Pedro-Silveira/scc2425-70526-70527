@@ -1,4 +1,5 @@
 utils\CosmosDB_NoSQL.class
+tukano\impl\JavaShorts$ShortEntry.class
 utils\Sleep.class
 tukano\clients\rest\RestUsersClient.class
 tukano\impl\rest\RestResource$1.class
