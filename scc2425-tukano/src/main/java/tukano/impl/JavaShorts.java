@@ -343,6 +343,7 @@ public class JavaShorts implements Shorts {
             return String.format("shortId: %s, timestamp: %s", shortId, timestamp);
         }
     }
+	
 	protected Result<User> okUser( String userId, String pwd) {
 		return JavaUsers.getInstance().getUser(userId, pwd);
 	}

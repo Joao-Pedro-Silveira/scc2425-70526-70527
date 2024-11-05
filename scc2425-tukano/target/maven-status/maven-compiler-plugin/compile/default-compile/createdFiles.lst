@@ -13,7 +13,6 @@ tukano\api\Users.class
 tukano\impl\cache\RedisCache.class
 tukano\impl\JavaShorts.class
 tukano\impl\storage\AzureBlobStorage.class
-tukano\impl\JavaBlobs.class
 tukano\api\User.class
 tukano\api\rest\RestUsers.class
 tukano\impl\JavaUsers.class
@@ -58,6 +57,5 @@ tukano\clients\rest\RestShortsClient$1.class
 utils\JSON.class
 tukano\clients\rest\RestShortsClient$4.class
 tukano\api\Short.class
-tukano\impl\rest\RestShortsResource.class
 tukano\impl\rest\RestUsersResource.class
 utils\Hash.class
