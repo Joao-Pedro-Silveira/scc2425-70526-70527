@@ -19,8 +19,9 @@ import tukano.impl.Token;
 public class Short {
 	
 	@Id
-	@JsonProperty("id")
 	String shortId;
+	@JsonProperty("id")
+	String id;
 	String ownerId;
 	String blobUrl;
 	long timestamp;
@@ -35,6 +36,7 @@ public class Short {
 		this.blobUrl = blobUrl;
 		this.timestamp = timestamp;
 		this.totalLikes = totalLikes;
+		this.id = shortId;
 	}
 
 	public Short(String shortId, String ownerId, String blobUrl) {

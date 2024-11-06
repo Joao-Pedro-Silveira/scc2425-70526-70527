@@ -10,14 +10,13 @@ import jakarta.persistence.Id;
 @Entity
 public class Following{
 
-	@Id 
 	@JsonProperty("follower")
 	String follower;
 	
-	@Id 
 	@JsonProperty("followee")
 	String followee;
 
+	@Id
 	@JsonProperty("id")
 	private String id;
 
