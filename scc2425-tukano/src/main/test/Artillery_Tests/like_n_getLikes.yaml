@@ -1,0 +1,26 @@
+config:
+  target: http://127.0.0.1:8080/tukano/rest
+  phases:
+    - name: like_n_getLikes
+      duration: 1 
+      arrivalRate: 1 
+
+scenarios:
+  - name: TuKanoHome
+    flow:
+      - post:
+          url: /shorts/Pao?pwd=baguette
+          capture: 
+            json: '$'  
+            as: 'response'
+
+      - post:
+          url: /shorts/{{ response.shortId }}/Cambio/likes?isLiked=true&pwd=easypass
+
+      - get:
+          url: /shorts/{{ response.shortId }}/likes?pwd=baguette
+          capture:
+            json: '$'
+            as: 'LikesResponse'
+
+      - log: "Likes of {{ response.shortId}} : {{ LikesResponse }}" 

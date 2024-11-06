@@ -1,7 +1,7 @@
 config:
   target: http://127.0.0.1:8080/tukano/rest 
   phases:
-    - name: simple_post_short
+    - name: create_short_n_upload_blob
       duration: 1 
       arrivalRate: 1 
 
@@ -13,10 +13,6 @@ scenarios:
           capture: 
             json: '$'  
             as: 'response'  
-
-      - log: "Response from first POST: {{ response }}"  
-
-      - log: "Captured blobUrl: {{ response.blobUrl }}"  
 
       - post:
           url: '{{ response.blobUrl }}'  

@@ -1,0 +1,17 @@
+config:
+  target: http://127.0.0.1:8080/tukano/rest
+  phases:
+    - name: delete_User
+      duration: 1
+      arrivalCount: 1
+
+scenarios:
+  - name: TuKanoHome
+    flow:
+      - delete:
+          url: /users/Pao?pwd=baguette
+          capture:
+            json: '$'
+            as: 'deleteResponse'
+
+      - log: "Deleted User : {{ deleteResponse }}" 

@@ -18,8 +18,6 @@ scenarios:
               pwd: "easypass"                                                
               email: "camb@gmail.com"                                            
               displayName: "camboio"
-
-      - log: "Response from first POST: {{ response }}"  # Log the entire captured response
-
+              
       - get:
             url: /users/Cambio?pwd=easypass
