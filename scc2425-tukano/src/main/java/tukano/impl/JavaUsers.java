@@ -70,11 +70,10 @@ public class JavaUsers implements Users {
 			return error(BAD_REQUEST);
 		
 		if(nosql){
-			final var res = CacheForCosmos.getOne("users:"+userId, User.class);
-			if(res.value() != null){
+			var res = CacheForCosmos.getOne("users:"+userId, User.class);
+			if(res.isOK()){
 
 				Log.info(() -> "User found in cache ");
-				Log.info(() -> res.value().toString());
 
 				return validatedUserOrError(res, pwd);
 			}
@@ -122,7 +121,7 @@ public class JavaUsers implements Users {
 			return error(BAD_REQUEST);
 
 		if(nosql){
-			return errorOrResult( validatedUserOrError(CacheForCosmos.getOne("users:"+userId, User.class), pwd), user -> {
+			return errorOrResult( validatedUserOrError(CosmosDB.getOne(userId, User.class), pwd), user -> {
 				JavaShorts.getInstance().deleteAllShorts(userId, pwd, Token.get(userId));
 				JavaBlobs.getInstance().deleteAllBlobs(userId, Token.get(userId));
 
@@ -149,7 +148,7 @@ public class JavaUsers implements Users {
 		Log.info( () -> format("searchUsers : patterns = %s\n", pattern));
 
 		if(nosql){
-			var query = format("SELECT u.pwd, u.email, u.displayName, u.id FROM User u WHERE UPPER(u.id) LIKE '%%%s%%'", pattern.toUpperCase());
+			var query = format("SELECT u.pwd, u.email, u.displayName, u.id FROM users u WHERE UPPER(u.id) LIKE '%%%s%%'", pattern.toUpperCase());
 			var hits = CosmosDB.sql(query, User.class)
 					.stream()
 					.map(User::copyWithoutPassword)
@@ -157,7 +156,7 @@ public class JavaUsers implements Users {
 			
 			return ok(hits);
 		} else {
-			var query = format("SELECT * FROM User u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern);
+			var query = format("SELECT * FROM users u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern);
 			var hits = DB.sql(query, User.class)
 					.stream()
 					.map(User::copyWithoutPassword)

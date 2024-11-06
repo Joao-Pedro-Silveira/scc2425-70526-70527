@@ -2,15 +2,20 @@ package tukano.api;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
+@Table(name = "users")
 public class User {
 	
 	@Id
-	@JsonProperty("id")
 	private String userId;
+
+	@JsonProperty("id")
+	private String id;
+
 	private String pwd;
 	private String email;	
 	private String displayName;
@@ -22,6 +27,7 @@ public class User {
 		this.email = email;
 		this.userId = userId;
 		this.displayName = displayName;
+		this.id = userId;
 	}
 	
 	public String getUserId() {
