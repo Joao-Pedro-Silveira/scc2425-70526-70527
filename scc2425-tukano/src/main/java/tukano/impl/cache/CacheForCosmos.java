@@ -12,6 +12,8 @@ public class CacheForCosmos {
 	
 	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
 
+	private static final int DEFAULT_TTL = 30;
+
 	public static <T> Result<T> getOne(String key, Class<T> clazz) {
 
 		var jedis = RedisCache.getCachePool().getResource();
@@ -49,7 +51,7 @@ public class CacheForCosmos {
 
         var jedis = RedisCache.getCachePool().getResource();
         //var key = obj.getClass().getSimpleName() + ":" + id;
-        jedis.set(key, JSON.encode(obj));
+        jedis.setex(key, DEFAULT_TTL, JSON.encode(obj));
 		
 		return Result.ok(obj);
 	}

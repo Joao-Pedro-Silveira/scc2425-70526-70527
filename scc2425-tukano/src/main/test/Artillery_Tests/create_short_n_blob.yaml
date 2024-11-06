@@ -1,5 +1,5 @@
 config:
-  target: http://127.0.0.1:8080/tukano/rest  # Base target for relative URLs
+  target: http://127.0.0.1:8080/tukano/rest 
   phases:
     - name: simple_post_short
       duration: 1 
@@ -9,14 +9,14 @@ scenarios:
   - name: TuKanoHome
     flow:
       - post:
-          url: /shorts/kgallagher?pwd=easypass
+          url: /shorts/Pao?pwd=baguette
           capture: 
-            json: '$'  # Capture the entire response
-            as: 'response'  # Store it as 'response'
+            json: '$'  
+            as: 'response'  
 
-      - log: "Response from first POST: {{ response }}"  # Log the entire captured response
+      - log: "Response from first POST: {{ response }}"  
 
-      - log: "Captured blobUrl: {{ response.blobUrl }}"  # Directly reference blobUrl from the response
+      - log: "Captured blobUrl: {{ response.blobUrl }}"  
 
       - post:
-          url: '{{ response.blobUrl }}'  # Use the full blobUrl directly
+          url: '{{ response.blobUrl }}'  

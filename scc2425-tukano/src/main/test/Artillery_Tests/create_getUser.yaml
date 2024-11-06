@@ -1,0 +1,25 @@
+config:
+  target: http://127.0.0.1:8080/tukano/rest  # Base target for relative URLs
+  phases:
+    - name: simple_post_getUser
+      duration: 1 
+      arrivalRate: 1 
+
+scenarios:
+  - name: TuKanoHome
+    flow:
+      - post:
+          url: /users/                                                        
+          headers:                                                            
+              Content-Type: application/json                                  
+          json:
+              userId: "Cambio"                                                               
+              id: "Cambio"
+              pwd: "easypass"                                                
+              email: "camb@gmail.com"                                            
+              displayName: "camboio"
+
+      - log: "Response from first POST: {{ response }}"  # Log the entire captured response
+
+      - get:
+            url: /users/Cambio?pwd=easypass

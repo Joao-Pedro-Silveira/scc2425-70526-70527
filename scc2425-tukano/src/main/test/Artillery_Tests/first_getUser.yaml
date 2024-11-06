@@ -3,10 +3,10 @@ config:
     phases:
       - name: simple_get
         duration: 1 # how long the test will run for, in seconds
-        arrivalRate: 1 # number of arrivals per second.
+        arrivalCount: 1 # number of arrivals per second.
 
 scenarios:
     - name: TuKanoHome
       flow:
         - get:
-            url: /users/kgallagher?pwd=easypass
+            url: /users/Pao?pwd=baguette
