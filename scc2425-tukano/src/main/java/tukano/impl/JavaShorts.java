@@ -47,6 +47,7 @@ public class JavaShorts implements Shorts {
 	private static Dotenv dotenv = Dotenv.load();
 
 	private boolean nosql = Boolean.parseBoolean(dotenv.get("NOSQL"));
+	private boolean cache = Boolean.parseBoolean(dotenv.get("CACHE"));
 	
 	synchronized public static Shorts getInstance() {
 		if( instance == null )

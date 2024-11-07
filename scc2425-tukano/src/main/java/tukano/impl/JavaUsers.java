@@ -30,6 +30,7 @@ public class JavaUsers implements Users {
 	private static Dotenv dotenv = Dotenv.load();
 
 	private boolean nosql = Boolean.parseBoolean(dotenv.get("NOSQL"));
+	private boolean cache = Boolean.parseBoolean(dotenv.get("CACHE"));
 	
 	synchronized public static Users getInstance() {
 		if( instance == null )
@@ -47,19 +48,25 @@ public class JavaUsers implements Users {
 		if( badUserInfo( user ) )
 			return error(BAD_REQUEST);
 
+		Result<User> res;
+
 		if(nosql){
 			Log.info(() -> "Using CosmosDB");
-			var res = CosmosDB.insertOne(user);
-			if(res.isOK()){
-				Log.info(() -> "Inserting into cache");
-				CacheForCosmos.insertOne("users:"+user.getUserId(), user);
-				//CosmosDB.insertOne(new Following(user.getUserId()));
-			}
-			Log.info(() -> "Returning result");
-			return errorOrValue(res, user.getUserId());
+			res = CosmosDB.insertOne(user);
+		} 
+		else {
+			Log.info(() -> "Using SQL DB");
+			res = DB.insertOne(user);
 		}
+
+		if(res.isOK() && cache){
+			Log.info(() -> "Inserting into cache");
+			CacheForCosmos.insertOne("users:"+user.getUserId(), user);
+			//DB.insertOne(new Following(user.getUserId()));
+		}
+		Log.info(() -> "Returning result");
+		return errorOrValue(res, user.getUserId());
 		
-		return errorOrValue( DB.insertOne( user), user.getUserId() );
 	}
 
 	@Override
@@ -69,7 +76,7 @@ public class JavaUsers implements Users {
 		if (userId == null)
 			return error(BAD_REQUEST);
 		
-		if(nosql){
+		if(cache){
 			var res = CacheForCosmos.getOne("users:"+userId, User.class);
 			if(res.isOK()){
 
@@ -77,20 +84,21 @@ public class JavaUsers implements Users {
 
 				return validatedUserOrError(res, pwd);
 			}
-
-			var ras = CosmosDB.getOne(userId, User.class);
-
-			if(ras.isOK()){
-				Log.info(() -> "User found in DB");
-				CacheForCosmos.insertOne(userId, ras.value());
-			}
-
-			return validatedUserOrError(ras, pwd);
-			
-		} else{
-
-			return validatedUserOrError( DB.getOne( userId, User.class), pwd);
 		}
+
+		Result<User> dbres;
+		if(nosql){
+			dbres = CosmosDB.getOne(userId, User.class);
+		} else {
+			dbres = DB.getOne( userId, User.class);
+		}
+
+		if(dbres.isOK() && cache){
+			Log.info(() -> "User found in DB");
+			CacheForCosmos.insertOne(userId, dbres.value());
+		}
+
+		return validatedUserOrError(dbres, pwd);
 	}
 
 	@Override
@@ -99,17 +107,22 @@ public class JavaUsers implements Users {
 
 		if (badUpdateUserInfo(userId, pwd, other))
 				return error(BAD_REQUEST);
-
 		if (nosql) {
-			return errorOrResult( validatedUserOrError(CacheForCosmos.getOne("users:"+userId, User.class), pwd), user -> {
+			return errorOrResult( validatedUserOrError(CosmosDB.getOne(userId, User.class), pwd), user -> {
 				var res = CosmosDB.updateOne(user.updateFrom(other));
-				if(res.isOK()){
+				if(res.isOK() && cache){
 					CacheForCosmos.updateOne("users:"+userId, res.value());
 				}
 				return res;
 			});
 		} else {
-			return errorOrResult( validatedUserOrError(DB.getOne( userId, User.class), pwd), user -> DB.updateOne( user.updateFrom(other)));
+			return errorOrResult( validatedUserOrError(DB.getOne(userId, User.class), pwd), user -> {
+				var res = DB.updateOne( user.updateFrom(other));
+				if(res.isOK() && cache){
+					CacheForCosmos.updateOne("users:"+userId, res.value());
+				}
+				return res;
+			});
 		}
 	}
 
@@ -126,7 +139,8 @@ public class JavaUsers implements Users {
 				JavaBlobs.getInstance().deleteAllBlobs(userId, Token.get(userId));
 
 				CosmosDB.deleteOne(user);
-				CacheForCosmos.deleteOne("users:"+userId);
+				if(cache)
+					CacheForCosmos.deleteOne("users:"+userId);
 				return ok(user);
 			});
 		} else {
@@ -137,6 +151,9 @@ public class JavaUsers implements Users {
 					JavaShorts.getInstance().deleteAllShorts(userId, pwd, Token.get(userId));
 					JavaBlobs.getInstance().deleteAllBlobs(userId, Token.get(userId));
 				}).start();
+
+				if(cache)
+					CacheForCosmos.deleteOne("users:"+userId);
 				
 				return DB.deleteOne( user);
 			});
