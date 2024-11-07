@@ -96,7 +96,7 @@ public class JavaShorts implements Shorts {
 
 			var likes = CosmosDB.sql(query, Long.class);
 
-			final var res = CacheForCosmos.getOne("shorts:"+shortId, Short.class);
+			final var res = CacheForCosmos.getOne("shorts:"+shortId, Short.class, true);
 
 			if (res.isOK()){
 				Log.info(() -> format("Short found in cache %s\n", res.value().toString()));

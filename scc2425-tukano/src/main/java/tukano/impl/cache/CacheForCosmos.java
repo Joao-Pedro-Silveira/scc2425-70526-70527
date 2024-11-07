@@ -14,14 +14,16 @@ public class CacheForCosmos {
 
 	private static final int DEFAULT_TTL = 30;
 
-	public static <T> Result<T> getOne(String key, Class<T> clazz) {
+	public static <T> Result<T> getOne(String key, Class<T> clazz, Boolean refreshTimeOut) {
 
 		var jedis = RedisCache.getCachePool().getResource();
 		//var key = clazz.getSimpleName() + ":" + id;
 		var value = jedis.get(key);
-
+		
 		if(value != null){
 			Log.info(() -> "Value found in cache");
+			if(refreshTimeOut)
+				jedis.expire(key, DEFAULT_TTL);
 			return Result.ok( JSON.decode(value, clazz));
 		}
 

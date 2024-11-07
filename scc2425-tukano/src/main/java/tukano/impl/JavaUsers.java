@@ -77,7 +77,7 @@ public class JavaUsers implements Users {
 			return error(BAD_REQUEST);
 		
 		if(cache){
-			var res = CacheForCosmos.getOne("users:"+userId, User.class);
+			var res = CacheForCosmos.getOne("users:"+userId, User.class, true);
 			if(res.isOK()){
 
 				Log.info(() -> "User found in cache ");
