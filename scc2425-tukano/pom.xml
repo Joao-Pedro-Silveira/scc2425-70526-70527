@@ -56,7 +56,34 @@
 						<username>maven</username>
 						<password>s3cret</password>
 					</configuration>
-				</plugin>
+			</plugin>
+			<plugin> 
+				<groupId>com.microsoft.azure</groupId>
+				<artifactId>azure-webapp-maven-plugin</artifactId>  
+				<version>2.13.0</version>
+			    <configuration>
+			        <schemaVersion>v2</schemaVersion>
+			        <resourceGroup>scc-70526-70527-rg</resourceGroup>
+			        <appName>scc-70526-70527</appName>
+			        <pricingTier>F1</pricingTier>
+			        <region>westeurope</region>
+			        <runtime>
+			            <os>Linux</os>
+			            <javaVersion>Java 17</javaVersion>
+			            <webContainer>Tomcat 10.0</webContainer>
+			        </runtime>
+			        <deployment>
+			            <resources>
+			                <resource>
+			                    <directory>${project.basedir}/target</directory>
+			                    <includes>
+			                        <include>*.war</include>
+			                    </includes>
+			                </resource>
+			            </resources>
+			        </deployment>
+			    </configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
