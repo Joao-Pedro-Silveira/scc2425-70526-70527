@@ -17,13 +17,15 @@ public class CacheForCosmos {
 	public static <T> Result<T> getOne(String key, Class<T> clazz, Boolean refreshTimeOut) {
 
 		var jedis = RedisCache.getCachePool().getResource();
-		//var key = clazz.getSimpleName() + ":" + id;
+
 		var value = jedis.get(key);
 		
 		if(value != null){
 			Log.info(() -> "Value found in cache");
+			
 			if(refreshTimeOut)
 				jedis.expire(key, DEFAULT_TTL);
+
 			return Result.ok( JSON.decode(value, clazz));
 		}
 
@@ -42,7 +44,6 @@ public class CacheForCosmos {
 	public static <T> Result<T> updateOne(String key, T obj) {
 
 		var jedis = RedisCache.getCachePool().getResource();
-		//var key = obj.getClass().getSimpleName() + ":" + id;
 
 		jedis.set(key, JSON.encode(obj));
 

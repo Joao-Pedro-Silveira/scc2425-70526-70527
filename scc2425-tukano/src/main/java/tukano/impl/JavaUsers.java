@@ -95,7 +95,7 @@ public class JavaUsers implements Users {
 
 		if(dbres.isOK() && cache){
 			Log.info(() -> "User found in DB");
-			CacheForCosmos.insertOne(userId, dbres.value());
+			CacheForCosmos.insertOne("users:"+userId, dbres.value());
 		}
 
 		return validatedUserOrError(dbres, pwd);
