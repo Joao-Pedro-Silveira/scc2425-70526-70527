@@ -21,5 +21,5 @@ The boolean values like and follow methods were changed to be query parameters.
 
 Group Members:
 
-    André Branco nº 70526
-    João Silveira nº 70527
+    André Branco nº 70526 email: afm.branco@campus.fct.unl.pt
+    João Silveira nº 70527 email: jpg.silveira@campus.fct.unl.pt
